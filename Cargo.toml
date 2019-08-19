@@ -1,0 +1,8 @@
+[package]
+name = "to"
+version = "0.1.0"
+authors = ["Jose Albizures <albizures3601@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+structopt = "0.2.18"
