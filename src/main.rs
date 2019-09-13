@@ -14,7 +14,11 @@ use std::collections::HashMap;
 struct Cli {
     #[structopt(short = "s", long = "save")]
     save: bool,
-    alias: String,
+    #[structopt(short = "l", long = "list")]
+    list: bool,
+    #[structopt(short = "i", long = "interactive")]
+    interactive: bool,
+    alias: Option<String>,
 }
 
 type Config = HashMap<String, String>;
@@ -90,13 +94,30 @@ fn go_to(alias: String) -> io::Result<()> {
     panic!("Unknow alias");
 }
 
+fn go_to_interactive() -> io::Result<()> {
+    let config = read_config()?;
+
+    panic!("Unknow alias");
+}
+
+fn to_list() -> io::Result<()> {
+    let config = read_config()?;
+
+    for (alias, path) in config {
+        println!("{}\t => {}", alias, path)
+    }
+
+    Ok(())
+}
+
 fn main() {
     let opt = Cli::from_args();
-    let Cli { save, alias } = opt;
 
-    if save {
-        save_alias(alias);
-    } else {
-        go_to(alias);
-    }
+    match opt {
+        Cli { interactive: true, .. } => go_to_interactive(),
+        Cli { list: true, .. } => to_list(),
+        Cli { save: true, alias: Some(alias), .. } => save_alias(alias),
+        Cli { save: false, alias: Some(alias), .. } => go_to(alias),
+        Cli { alias: None, .. } => panic!("alias is needed"),
+    };
 }
